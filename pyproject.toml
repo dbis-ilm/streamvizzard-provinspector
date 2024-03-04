@@ -1,0 +1,72 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "provinspector"
+version = "0.1.0"
+description = "Provenance capturing and inspection for the StreamVizzard stream processing framework"
+license = "Apache-2.0"
+authors = ["Marius Schlegel <marius.schlegel@tu-ilmenau.de>"]
+readme = "README.md"
+repository = "https://dbgit.prakinf.tu-ilmenau.de/masc7357/provinspector"
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+packages = [{ include = "provinspector", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.10.*, <3.13"
+docker = "^7.0.0"
+prov = { extras = ["dot"], version = "^2.0.0" }
+py2neo = "^2021.2.4"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.2.0"
+genbadge = { extras = ["coverage"], version = "^1.1.1" }
+isort = "^5.13.2"
+pygount = "^1.6.1"
+pytest = "^8.1.0"
+pytest-cov = "^4.1.0"
+tox = "^4.13.0"
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+addopts = "-rA --cov=src/provinspector --cov-report term-missing"
+testpaths = ["tests"]
+log_level = "WARN"
+log_cli = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "@abc.abstractmethod",
+    "if __name__ == .__main__.:",
+]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py{310,311,312}
+
+[testenv]
+skip_install = true
+allowlist_externals = poetry
+commands_pre = poetry install --with dev
+commands =
+    poetry run pytest
+    py311: poetry run coverage xml -o docs/assets/coverage.xml
+    py311: poetry run genbadge coverage -i docs/assets/coverage.xml -o docs/assets/coverage-badge.svg
+"""

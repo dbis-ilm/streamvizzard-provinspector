@@ -1,0 +1,28 @@
+{"uniqueID": "INI0", "updateType": "OPERATOR_CREATION", "opID": 1, "opName": "TextFile", "opData": {"path": "D:/PHD/E4SM/Scenario 1/TestData/sensors.txt", "lineSep": "\n", "repeat": 0, "rate": 15}}
+{"uniqueID": "INI1", "updateType": "OPERATOR_CREATION", "opID": 2, "opName": "ParseJSON", "opData": {}}
+{"uniqueID": "INI2", "updateType": "OPERATOR_CREATION", "opID": 207, "opName": "UDF", "opData": {"code": "return [input[0]],", "inputs": 1, "outputs": 1}}
+{"uniqueID": "INI3", "updateType": "OPERATOR_CREATION", "opID": 3, "opName": "TumblingWindowCount", "opData": {"value": 40.0}}
+{"uniqueID": "INI4", "updateType": "OPERATOR_CREATION", "opID": 4, "opName": "LstmPrediction", "opData": {"modelPath": "D:/PHD/E4SM/Scenario 1/TestData/lstm/", "predictSteps": 219}}
+{"uniqueID": "INI5", "updateType": "OPERATOR_CREATION", "opID": 5, "opName": "ValidateLstmPrediction", "opData": {}}
+{"uniqueID": "INI6", "updateType": "OPERATOR_CREATION", "opID": 34, "opName": "ReadFolder", "opData": {"path": "D:/PHD/E4SM/Scenario 1/TestData/cameraDup", "repeat": 0, "rate": 15}}
+{"uniqueID": "INI7", "updateType": "OPERATOR_CREATION", "opID": 35, "opName": "ImgLoad", "opData": {"flags": -1}}
+{"uniqueID": "INI8", "updateType": "OPERATOR_CREATION", "opID": 999, "opName": "ImgResize", "opData": {"scaleX": "100.0%", "scaleY": "100.0%"}}
+{"uniqueID": "INI9", "updateType": "OPERATOR_CREATION", "opID": 211, "opName": "UDO", "opData": {"code": "from spe.pipeline.operators.imageProc.dataTypes.image import Image\r\n\r\nclass UserDefinedOperator:\r\n    def onStart(self):\r\n        self.counter = 0\r\n\r\n    def execute(self, tupleIn: Tuple) -> tuple:\r\n        self.counter += 1\r\n        \r\n        if self.counter == 2:\r\n            self.counter = 0\r\n            return None\r\n\r\n        mat = tupleIn.data[0].mat * 1.75\r\n        \r\n        mat = mat[445:445+59,1015:1015+9]\r\n        \r\n        return Image(mat),\r\n\r\n    def onDestroy(self):\r\n        ...", "inputs": 1, "outputs": 1}}
+{"uniqueID": "INI10", "updateType": "OPERATOR_CREATION", "opID": 213, "opName": "UDO", "opData": {"code": "from spe.pipeline.operators.imageProc.dataTypes.image import Image\r\nimport cv2\r\nimport numpy as np\r\n\r\nclass UserDefinedOperator:\r\n    def onStart(self):\r\n        ...\r\n\r\n    def execute(self, tupleIn: Tuple) -> tuple:\r\n        ref = 0.4\r\n        \r\n        img = tupleIn.data[0].mat\r\n        \r\n        img /= 1.75\r\n\r\n        h = img.shape[0]\r\n        w = img.shape[1]\r\n        \r\n        # loop over the image, pixel by pixel\r\n        for y in range(0, h):\r\n            for x in range(0, w):\r\n                val = img[y, x]\r\n                \r\n                val = max(0, min((val - 10372) / (39338 - 10372), 1))\r\n                val = max(0, min((val) / (1 - ref) * 255, 255))\r\n                \r\n                img[y, x] = val\r\n                \r\n        norm = img.astype(\"uint8\")\r\n        \r\n        pseudo = cv2.applyColorMap(norm, cv2.COLORMAP_JET)\r\n\r\n        return Image(pseudo),\r\n\r\n    def onDestroy(self):\r\n        ...", "inputs": 1, "outputs": 1}}
+{"uniqueID": "INI11", "updateType": "OPERATOR_CREATION", "opID": 9, "opName": "CnnPrediction", "opData": {"modelPath": "D:/PHD/E4SM/Scenario 1/TestData/cnn.hdf5"}}
+{"uniqueID": "INI12", "updateType": "OPERATOR_CREATION", "opID": 10, "opName": "ValidateCnnPrediction", "opData": {}}
+{"uniqueID": "INI13", "updateType": "OPERATOR_CREATION", "opID": 11, "opName": "UDF", "opData": {"code": "return input", "inputs": 2, "outputs": 0}}
+{"uniqueID": "INI14", "updateType": "CONNECTION_CREATION", "conID": 0, "fromOpID": 1, "toOpID": 2, "fromSockID": 0, "toSockID": 0}
+{"uniqueID": "INI15", "updateType": "CONNECTION_CREATION", "conID": 1, "fromOpID": 2, "toOpID": 207, "fromSockID": 0, "toSockID": 0}
+{"uniqueID": "INI16", "updateType": "CONNECTION_CREATION", "conID": 2, "fromOpID": 2, "toOpID": 3, "fromSockID": 0, "toSockID": 0}
+{"uniqueID": "INI17", "updateType": "CONNECTION_CREATION", "conID": 3, "fromOpID": 3, "toOpID": 4, "fromSockID": 0, "toSockID": 0}
+{"uniqueID": "INI18", "updateType": "CONNECTION_CREATION", "conID": 4, "fromOpID": 207, "toOpID": 5, "fromSockID": 0, "toSockID": 0}
+{"uniqueID": "INI19", "updateType": "CONNECTION_CREATION", "conID": 5, "fromOpID": 4, "toOpID": 5, "fromSockID": 0, "toSockID": 1}
+{"uniqueID": "INI20", "updateType": "CONNECTION_CREATION", "conID": 6, "fromOpID": 34, "toOpID": 35, "fromSockID": 0, "toSockID": 0}
+{"uniqueID": "INI21", "updateType": "CONNECTION_CREATION", "conID": 7, "fromOpID": 35, "toOpID": 999, "fromSockID": 0, "toSockID": 0}
+{"uniqueID": "INI22", "updateType": "CONNECTION_CREATION", "conID": 8, "fromOpID": 999, "toOpID": 211, "fromSockID": 0, "toSockID": 0}
+{"uniqueID": "INI23", "updateType": "CONNECTION_CREATION", "conID": 9, "fromOpID": 211, "toOpID": 213, "fromSockID": 0, "toSockID": 0}
+{"uniqueID": "INI24", "updateType": "CONNECTION_CREATION", "conID": 10, "fromOpID": 211, "toOpID": 9, "fromSockID": 0, "toSockID": 0}
+{"uniqueID": "INI25", "updateType": "CONNECTION_CREATION", "conID": 11, "fromOpID": 9, "toOpID": 10, "fromSockID": 0, "toSockID": 0}
+{"uniqueID": "INI26", "updateType": "CONNECTION_CREATION", "conID": 12, "fromOpID": 5, "toOpID": 11, "fromSockID": 0, "toSockID": 0}
+{"uniqueID": "INI27", "updateType": "CONNECTION_CREATION", "conID": 13, "fromOpID": 10, "toOpID": 11, "fromSockID": 0, "toSockID": 1}
